@@ -23,38 +23,13 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.mujapps.foodieqrscanner.utils.BarcodeAnalyser
 import java.util.concurrent.Executors
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PreviewViewComposable() {
-
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // Permission granted
-        } else {
-            // Handle permission denial
-        }
-    }
-
-    LaunchedEffect(cameraPermissionState) {
-        if (!cameraPermissionState.status.isGranted && cameraPermissionState.status.shouldShowRationale) {
-            // Show rationale if needed
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-
-
-}
-
-@Composable
-fun LaunchCameraView() {
+fun PreviewViewComposable(mCallback: (List<Barcode>) -> Unit) {
     AndroidView(
         { context ->
             val cameraExecutor = Executors.newSingleThreadExecutor()
@@ -77,7 +52,8 @@ fun LaunchCameraView() {
                     .build()
                     .also { it ->
                         it.setAnalyzer(cameraExecutor, BarcodeAnalyser { barcodes ->
-                            Toast.makeText(context, barcodes, Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(context, barcodes, Toast.LENGTH_SHORT).show()
+                            mCallback(barcodes)
                         })
                     }
 
